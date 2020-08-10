@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include plastex *.css
+recursive-include plastex *.csv
+recursive-include plastex *.html
+recursive-include plastex *.ico
+recursive-include plastex *.js
+recursive-include plastex *.json
+recursive-include plastex *.md
+recursive-include plastex *.png
+recursive-include plastex *.py
+recursive-include plastex *.svg
+recursive-include plastex *.txt
+recursive-exclude plastex *.pyc
