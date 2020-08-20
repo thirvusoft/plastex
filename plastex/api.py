@@ -48,21 +48,40 @@ def send_mail(values,docname):
 		content = values['content']
 	to = ""
 	recipients = ""
+	recipient = []
 	if 'recipients' in values:
 		to = values['recipients']
 		recipients = to.split(",")
+		#print "recipients-------------",recipients
+		for re in recipients:
+			#print "rev-----------------",re
+			if re != "":
+				recipient.append(re)
+		#print "recipient-------------",recipient
 	
 	lang_1 = values['select_language']
 	lang_2 = values['select_languages']
 	cc_email = ""
+	cc_mails = []
 	if 'cc' in values:
 		cc = values['cc']
 		cc_email = cc.split(",")
+		#print "cc_email-------------",cc_email
+		for cc in cc_email:
+			if cc != "":
+				cc_mails.append(cc)
+		#print "cc_mails-------------",cc_mails
+			
 	bcc_email = ""
+	bcc_emails = []
 	if 'bcc' in values:
 		bcc = values['bcc']
 		bcc_email = bcc.split(",")
-		
+		#print "bcc_email-------------",bcc_email
+		for bcc in bcc_email:
+			if bcc != "":
+				bcc_emails.append(bcc)
+		#print "bcc_emails-------------",bcc_emails
 	print_format1 = ""
 	if 'select_print_format' in values:
 		
@@ -94,11 +113,11 @@ def send_mail(values,docname):
 	else:
 		frappe.throw("Please select first print formats")
 	sender = frappe.get_list('Email Account', filters={"default_outgoing":1}, fields=['email_id'])
-	frappe.sendmail(recipients = recipients,
+	frappe.sendmail(recipients = recipient,
 			subject = values['subject'],
 			sender = sender[0]['email_id'],
-			cc = cc_email,
-			bcc = bcc_email,
+			cc = cc_mails,
+			bcc = bcc_emails,
 			#message = frappe.render_template(self.message, context),
 			message = content,
 			reference_doctype = "Purchase Order",
