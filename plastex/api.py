@@ -91,6 +91,9 @@ def send_mail(values,docname):
 		print_format2 = values['select_print_formats']
 	purchase_order = 'Purchase Order'
 	sales_order = values['sales_order']
+	#template = ""
+	if 'email_template' in values:
+		content =  get_template(values['email_template'])
 	attachments = ""
 	if 'select_print_format' in values and 'select_print_formats' in values:
 		attachments = [{
@@ -126,3 +129,7 @@ def send_mail(values,docname):
 			print_letterhead = ((attachments
 				and attachments[0].get('print_letterhead')) or False))
 	return True
+@frappe.whitelist()
+def get_template(value):
+	template = frappe.get_value("Email Template", value , 'response')
+	return template
