@@ -133,7 +133,9 @@ def send_mail(values,docname):
 def get_template(value):
 	template = frappe.get_value("Email Template", value , 'response')
 	return template
+
 @frappe.whitelist()
 def get_email_template(value):
 	template = frappe.get_list("Email Template", filters={"name":value} , fields=[ 'response','subject'])
 	return template
+

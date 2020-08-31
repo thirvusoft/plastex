@@ -10,9 +10,11 @@ app_icon = "octicon octicon-book"
 app_color = "grey"
 app_email = "info@frappe.io"
 app_license = "MIT"
-doctype_js = {
-	"Purchase Order":"fixtures/custom_scripts/Purchase Order.js"
-}
+
+#doctype_js = {
+#	"Purchase Order":"fixtures/custom_scripts/Purchase Order.js"
+#}
+
 # Includes in <head>
 # ------------------
 
