@@ -130,13 +130,13 @@ def send_mail(values,docname):
 	for i in cc_mails:
 		i =  i.strip()
 		cc_mails_re.append(i)
-	cc_list = list(filter(None, recipient_re))	
+	cc_list = list(filter(None, cc_mails_re))	
 
 	bcc_emails_re = []
 	for i in bcc_emails:
 		i =  i.strip()
 		bcc_emails_re.append(i)
-	bcc_list = list(filter(None, recipient_re))
+	bcc_list = list(filter(None, bcc_emails_re))
 	#for rep in recipient:
 	#	rep = rep.strip()
 	#	if rep != ' ' and rep != "" and rep != None:
