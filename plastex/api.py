@@ -95,32 +95,48 @@ def send_mail(values,docname):
 	if 'email_template' in values:
 		content =  get_template(values['email_template'])
 	attachments = ""
-	if 'select_print_format' in values and 'select_print_formats' in values:
-		attachments = [{
-					"print_format_attachment": 1,
-					"doctype": purchase_order,
-					"name": docname,
-					"print_format": print_format1,
-					"print_letterhead": print_settings.with_letterhead,
-					"lang": lang_1
-				},
-				{
-					"print_format_attachment": 1,
-					"doctype": 'Sales Order',
-					"name": sales_order,
-					"print_format": print_format2,
-					"print_letterhead": print_settings.with_letterhead,
-					"lang": lang_2
-				}
-				]
-	else:
-		frappe.throw("Please select first print formats")
+	
+	if values["attach_document_print"] == 0:
+		attachments = ""
+	elif values["attach_document_print"] == 1:
+		if 'select_print_format' in values and 'select_print_formats' in values:
+			attachments = [{
+						"print_format_attachment": 1,
+						"doctype": purchase_order,
+						"name": docname,
+						"print_format": print_format1,
+						"print_letterhead": print_settings.with_letterhead,
+						"lang": lang_1
+					},
+					{
+						"print_format_attachment": 1,
+						"doctype": 'Sales Order',
+						"name": sales_order,
+						"print_format": print_format2,
+						"print_letterhead": print_settings.with_letterhead,
+						"lang": lang_2
+					}
+					]
+		else:
+			frappe.throw("Please select first print formats")
 	sender = frappe.get_list('Email Account', filters={"default_outgoing":1}, fields=['email_id'])
-	frappe.sendmail(recipients = recipient,
+	recipient_re = []
+	for rep in recipient:
+		if rep != ' ' and rep != "" and rep != None:
+			 recipient_re.append(rep)
+	cc_mails_re = []
+	for rep in cc_mails:
+		if rep != ' ' and rep != "" and rep != None:
+			 cc_mails_re.append(rep)
+	bcc_emails_re = []
+	for rep in bcc_emails:
+		if rep != ' ' and rep != "" and rep != None:
+			 bcc_emails_re.append(rep)
+	frappe.sendmail(recipients = recipient_re,
 			subject = values['subject'],
 			sender = sender[0]['email_id'],
-			cc = cc_mails,
-			bcc = bcc_emails,
+			cc = cc_mails_re,
+			bcc = bcc_emails_re,
 			#message = frappe.render_template(self.message, context),
 			message = content,
 			reference_doctype = "Purchase Order",
@@ -133,9 +149,7 @@ def send_mail(values,docname):
 def get_template(value):
 	template = frappe.get_value("Email Template", value , 'response')
 	return template
-
 @frappe.whitelist()
 def get_email_template(value):
 	template = frappe.get_list("Email Template", filters={"name":value} , fields=[ 'response','subject'])
 	return template
-
