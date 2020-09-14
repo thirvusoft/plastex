@@ -121,22 +121,39 @@ def send_mail(values,docname):
 			frappe.throw("Please select first print formats")
 	sender = frappe.get_list('Email Account', filters={"default_outgoing":1}, fields=['email_id'])
 	recipient_re = []
-	for rep in recipient:
-		if rep != ' ' and rep != "" and rep != None:
-			 recipient_re.append(rep)
+	
+	for i in recipient:
+		i =  i.strip()
+		recipient_re.append(i)
+	recipient_list = list(filter(None, recipient_re))
 	cc_mails_re = []
-	for rep in cc_mails:
-		if rep != ' ' and rep != "" and rep != None:
-			 cc_mails_re.append(rep)
+	for i in cc_mails:
+		i =  i.strip()
+		cc_mails_re.append(i)
+	cc_list = list(filter(None, recipient_re))	
+
 	bcc_emails_re = []
-	for rep in bcc_emails:
-		if rep != ' ' and rep != "" and rep != None:
-			 bcc_emails_re.append(rep)
-	frappe.sendmail(recipients = recipient_re,
+	for i in bcc_emails:
+		i =  i.strip()
+		bcc_emails_re.append(i)
+	bcc_list = list(filter(None, recipient_re))
+	#for rep in recipient:
+	#	rep = rep.strip()
+	#	if rep != ' ' and rep != "" and rep != None:
+	#		 recipient_re.append(rep)
+	
+	#for rep in cc_mails:
+	#	if rep != ' ' and rep != "" and rep != None:
+	#		 cc_mails_re.append(rep)
+	#bcc_emails_re = []
+	#for rep in bcc_emails:
+	#	if rep != ' ' and rep != "" and rep != None:
+	#		 bcc_emails_re.append(rep)
+	frappe.sendmail(recipients = recipient_list,
 			subject = values['subject'],
 			sender = sender[0]['email_id'],
-			cc = cc_mails_re,
-			bcc = bcc_emails_re,
+			cc = cc_list,
+			bcc = bcc_list,
 			#message = frappe.render_template(self.message, context),
 			message = content,
 			reference_doctype = "Purchase Order",
