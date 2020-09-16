@@ -8,6 +8,7 @@ from erpnext.utilities.transaction_base import TransactionBase
 from erpnext.accounts.party import get_party_account_currency
 from frappe.desk.notifications import clear_doctype_notifications
 from datetime import datetime
+from frappe.email.email_body import get_message_id
 import sys
 import os
 import operator
@@ -33,8 +34,11 @@ def get_print_format(doctype):
 	for pr in print_format:
 		print_list.append(pr.name)
 	return print_list
+'''
 @frappe.whitelist()
-def send_mail(values,docname):
+def send_mail(values,docname,content):
+	communication_medium="Email"
+	sent_or_received = "Sent"
 	from email.utils import formataddr
 	print_settings = frappe.get_doc("Print Settings", "Print Settings")
 	email_template = ""
@@ -44,44 +48,17 @@ def send_mail(values,docname):
 	values = json.loads(values)
 	if "email_template" in values:
 		email_template = values['email_template']
-	if 'content' in values:
-		content = values['content']
+	#if 'content' in values:
+	#	content = values['content']
+	print "content-----------",content
 	to = ""
-	recipients = ""
-	recipient = []
-	if 'recipients' in values:
-		to = values['recipients']
-		recipients = to.split(",")
-		#print "recipients-------------",recipients
-		for re in recipients:
-			#print "rev-----------------",re
-			if re != "":
-				recipient.append(re)
-		#print "recipient-------------",recipient
+	
+	
 	
 	lang_1 = values['select_language']
 	lang_2 = values['select_languages']
 	cc_email = ""
-	cc_mails = []
-	if 'cc' in values:
-		cc = values['cc']
-		cc_email = cc.split(",")
-		#print "cc_email-------------",cc_email
-		for cc in cc_email:
-			if cc != "":
-				cc_mails.append(cc)
-		#print "cc_mails-------------",cc_mails
-			
-	bcc_email = ""
-	bcc_emails = []
-	if 'bcc' in values:
-		bcc = values['bcc']
-		bcc_email = bcc.split(",")
-		#print "bcc_email-------------",bcc_email
-		for bcc in bcc_email:
-			if bcc != "":
-				bcc_emails.append(bcc)
-		#print "bcc_emails-------------",bcc_emails
+	
 	print_format1 = ""
 	if 'select_print_format' in values:
 		
@@ -121,22 +98,36 @@ def send_mail(values,docname):
 			frappe.throw("Please select first print formats")
 	sender = frappe.get_list('Email Account', filters={"default_outgoing":1}, fields=['email_id'])
 	recipient_re = []
+	recipient_list= {}
+	if 'recipients' in values:
+		to = values['recipients']
+		print "to0-----------",to
+		for i in to:
+			i =  i.strip()
+			
+			recipient_re.append(str(i))
+			
 	
-	for i in recipient:
-		i =  i.strip()
-		recipient_re.append(i)
-	recipient_list = list(filter(None, recipient_re))
 	cc_mails_re = []
-	for i in cc_mails:
-		i =  i.strip()
-		cc_mails_re.append(i)
-	cc_list = list(filter(None, cc_mails_re))	
+	cc_list = ""
+	cc = ""
+	if 'cc' in values:
+		cc = values['cc']
+		for i in cc:
+			i =  i.strip()
+			cc_mails_re.append(str(i))
+		cc_list = list(filter(None, cc_mails_re))	
 
 	bcc_emails_re = []
-	for i in bcc_emails:
-		i =  i.strip()
-		bcc_emails_re.append(i)
-	bcc_list = list(filter(None, bcc_emails_re))
+	bcc_list = ""
+	bcc = ""
+	if 'bcc' in values:
+		bcc = values['bcc']
+		for i in bcc_emails:
+			i =  i.strip()
+			bcc_emails_re.append(str(i))
+		bcc_list = list(filter(None, bcc_emails_re))
+	
 	#for rep in recipient:
 	#	rep = rep.strip()
 	#	if rep != ' ' and rep != "" and rep != None:
@@ -149,6 +140,7 @@ def send_mail(values,docname):
 	#for rep in bcc_emails:
 	#	if rep != ' ' and rep != "" and rep != None:
 	#		 bcc_emails_re.append(rep)
+	
 	frappe.sendmail(recipients = recipient_list,
 			subject = values['subject'],
 			sender = sender[0]['email_id'],
@@ -161,7 +153,55 @@ def send_mail(values,docname):
 			attachments = attachments,
 			print_letterhead = ((attachments
 				and attachments[0].get('print_letterhead')) or False))
-	return True
+	
+	doctype = "Purchase Order"
+	read_receipt=None
+	send_me_a_copy=False
+	print_format=None
+	print_html=None
+	sender_full_name=None
+	send_email=1
+	comm = frappe.get_doc({
+		"doctype":"Communication",
+		"subject": values['subject'],
+		"content": content,
+		"sender": sender[0]['email_id'],
+		"sender_full_name":sender_full_name,
+		"recipients": values['recipients'],
+		"cc": cc or None,
+		"bcc": bcc or None,
+		"communication_medium": communication_medium,
+		"sent_or_received": sent_or_received,
+		"reference_doctype": "Purchase Order",
+		"reference_name": docname,
+		"message_id":get_message_id().strip(" <>"),
+		"read_receipt":read_receipt,
+		"has_attachment": 1 if attachments else 0
+	})
+	comm.insert(ignore_permissions=True)
+
+	if not doctype:
+		# if no reference given, then send it against the communication
+		comm.db_set(dict(reference_doctype='Communication', reference_name=comm.name))
+
+	
+
+	# if not committed, delayed task doesn't find the communication
+	if attachments:
+		add_attachments("Communication", comm.name, attachments)
+
+	frappe.db.commit()
+	print_letterhead=True
+	if cint(send_email):
+		frappe.flags.print_letterhead = cint(print_letterhead)
+		comm.send(print_html, print_format, attachments, send_me_a_copy=send_me_a_copy)
+
+	return {
+		"name": comm.name,
+		"emails_not_sent_to": ", ".join(comm.emails_not_sent_to) if hasattr(comm, "emails_not_sent_to") else None
+	}
+	#return True
+'''
 @frappe.whitelist()
 def get_template(value):
 	template = frappe.get_value("Email Template", value , 'response')
@@ -170,3 +210,8 @@ def get_template(value):
 def get_email_template(value):
 	template = frappe.get_list("Email Template", filters={"name":value} , fields=[ 'response','subject'])
 	return template
+
+@frappe.whitelist()
+def get_print_settings():
+	print_settings = frappe.get_doc("Print Settings", "Print Settings")
+	return print_settings
