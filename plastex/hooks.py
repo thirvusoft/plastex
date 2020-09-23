@@ -10,11 +10,9 @@ app_icon = "octicon octicon-book"
 app_color = "grey"
 app_email = "info@frappe.io"
 app_license = "MIT"
-
-#doctype_js = {
-#	"Purchase Order":"fixtures/custom_scripts/Purchase Order.js"
-#}
-
+doctype_js = {
+	"Purchase Order":"fixtures/custom_scripts/Purchase Order.js"
+}
 # Includes in <head>
 # ------------------
 
@@ -83,34 +81,30 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
+#doc_events = {
+#	"Email Queue": {
+# 		"on_change": "plastex.api.reload",
+ #		"after_insert": "plastex.api.send_now",
 # 		"on_trash": "method"
 #	}
-# }
+#}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"plastex.tasks.all"
-# 	],
-# 	"daily": [
-# 		"plastex.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"plastex.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"plastex.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"plastex.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+#	"all": [
+#		"plastex.api.send"
+#	],
+ 	"cron": {
+
+		"* * * * *": [
+	            "plastex.api.send"
+		     
+		    
+		]
+	}
+}
 
 # Testing
 # -------

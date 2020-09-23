@@ -19,6 +19,7 @@ import math
 import base64
 import ast
 import schedule
+from frappe.email.queue import send_one
 
 @frappe.whitelist()
 def get_email_list():
@@ -215,3 +216,18 @@ def get_email_template(value):
 def get_print_settings():
 	print_settings = frappe.get_doc("Print Settings", "Print Settings")
 	return print_settings
+@frappe.whitelist()
+def send_now(value):
+	value = json.loads(value)	
+	frappe.db.set_value("Communication",value['name'], "sent_via_send_mail", 1 )
+
+@frappe.whitelist()
+def send():
+	#f= open("/home/frappe/frappe-bench/apps/plastex/plastex/output.out","a+")
+	email_queue = frappe.get_list("Email Queue", filters={"reference_doctype": "Purchase Order", "status":"Not Sent"}, fields=["name", "communication"])
+	for email in email_queue:
+		comm = frappe.get_value("Communication",email['communication'], "sent_via_send_mail")
+		#f.write("comm----------------"+str(comm)+'\n')
+		if comm ==1:
+			#f.write("name----------------"+str(email['name'])+'\n')
+			send_one(email['name'], now=True)
