@@ -1,7 +1,7 @@
+
 .DS_Store
 *.pyc
-*.txt
 *.egg-info
 *.swp
 tags
-nhance/docs/current
+plastex/docs/current
