@@ -2,6 +2,7 @@
 .DS_Store
 *.pyc
 *.egg-info
+.txt
 __pycache__
 *.swp
 tags
