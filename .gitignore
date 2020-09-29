@@ -6,4 +6,5 @@
 __pycache__
 *.swp
 tags
+plastex.egg-info/SOURCE.txt
 plastex/docs/current
