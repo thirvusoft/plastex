@@ -8,6 +8,7 @@ plastex/api.py
 plastex/hooks.py
 plastex/modules.txt
 plastex/patches.txt
+plastex.egg-info/.SOURCES.txt.swp
 plastex.egg-info/PKG-INFO
 plastex.egg-info/SOURCES.txt
 plastex.egg-info/dependency_links.txt
