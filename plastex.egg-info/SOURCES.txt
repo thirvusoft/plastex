@@ -4,9 +4,11 @@ license.txt
 requirements.txt
 setup.py
 plastex/__init__.py
+plastex/api.py
 plastex/hooks.py
 plastex/modules.txt
 plastex/patches.txt
+plastex.egg-info/.SOURCES.txt.swp
 plastex.egg-info/PKG-INFO
 plastex.egg-info/SOURCES.txt
 plastex.egg-info/dependency_links.txt
@@ -16,6 +18,7 @@ plastex.egg-info/top_level.txt
 plastex/config/__init__.py
 plastex/config/desktop.py
 plastex/config/docs.py
+plastex/fixtures/custom_field.json
 plastex/plastex/__init__.py
 plastex/templates/__init__.py
 plastex/templates/pages/__init__.py
