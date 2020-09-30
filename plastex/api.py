@@ -22,6 +22,7 @@ import schedule
 from frappe.email.queue import send_one
 
 
+
 @frappe.whitelist()
 def get_email_list():
 	data = []
