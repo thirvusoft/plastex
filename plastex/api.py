@@ -18,9 +18,9 @@ import time
 import math
 import base64
 import ast
-import schedule
-from frappe.email.queue import send_one
-
+# import schedule
+# from frappe.email.queue import send_one
+from frappe.email.doctype.email_queue.email_queue import send_now as ts_send_now
 
 
 @frappe.whitelist()
@@ -232,4 +232,5 @@ def send():
 		#f.write("comm----------------"+str(comm)+'\n')
 		if comm ==1:
 			#f.write("name----------------"+str(email['name'])+'\n')
-			send_one(email['name'], now=True)
+			# send_one(email['name'], now=True)
+			ts_send_now(email['name'])
