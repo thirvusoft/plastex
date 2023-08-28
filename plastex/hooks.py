@@ -11,7 +11,8 @@ app_color = "grey"
 app_email = "info@frappe.io"
 app_license = "MIT"
 doctype_js = {
-	"Purchase Order":"fixtures/custom_scripts/Purchase Order.js"
+	"Purchase Order":["fixtures/custom_scripts/Purchase Order.js",
+                   "plastex/purchase_order.js"]
 }
 # Includes in <head>
 # ------------------
