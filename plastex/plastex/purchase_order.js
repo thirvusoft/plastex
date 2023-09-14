@@ -14,7 +14,7 @@ frappe.ui.form.on("Purchase Order", "refresh", function(frm, cdt, cdn) {
     
     var print_list = get_print_format(cur_frm.doc.doctype);
     
-    // print_list.push("Standard");
+    print_list.push("Standard");
     
     //console.log("print_list-----------------"+print_list);
     
@@ -22,7 +22,7 @@ frappe.ui.form.on("Purchase Order", "refresh", function(frm, cdt, cdn) {
     
     var print_lists = get_print_format(doctype);
     
-    // print_lists.push("Standard");
+    print_lists.push("Standard");
     
     var d = new frappe.ui.Dialog({
     
@@ -394,47 +394,25 @@ frappe.ui.form.on("Purchase Order", "refresh", function(frm, cdt, cdn) {
     
     d.hide();
     
-    var attachments = [];
-    
+    var attachments = [
+        
+    ];
+    if (values.select_attachments) {
+        (async () => {
+            attachments.push((await frappe.db.get_list("File", {
+            filters: {"file_url": "/private/files/Sri Vigneshwara Enterprises.pdf"},
+            fields: ['name']
+           }))[0].name) 
+        }).call() 
+      
+    }
     if (values.attach_document_print ==1){
     
     var print_settings = get_print_settings();
     
     // console.log("print_settings-----------"+print_settings.with_letterhead);
-    
-    attachments = [{
-    
-    "print_format_attachment": 1,
-    
-    "doctype": 'Purchase Order',
-    
-    "name": cur_frm.doc.name,
-    
-    "print_format": values.select_print_format,
-    
-    "print_letterhead": print_settings.with_letterhead,
-    
-    "lang": values.select_language
-    
-    },
-    
-    {
-    
-    "print_format_attachment": 1,
-    
-    "doctype": 'Sales Order',
-    
-    "name": values.sales_order,
-    
-    "print_format": values.select_print_formats,
-    
-    "print_letterhead": print_settings.with_letterhead,
-    
-    "lang": values.select_languages
-    
-    }
-    
-    ];
+   
+   
     
     }
     
@@ -468,7 +446,18 @@ frappe.ui.form.on("Purchase Order", "refresh", function(frm, cdt, cdn) {
     
     send_me_a_copy: values.send_me_a_copy,
     
-    print_format: "",
+    print_format: [
+        {
+            "print_format": values.select_print_format,
+            "reference_doctype": cur_frm.doc.doctype,
+            "reference_name": cur_frm.doc.name,
+        },
+        {
+            "print_format": values.select_print_formats,
+            "reference_doctype": 'Sales Order',
+            "reference_name": values.sales_order,
+        }
+    ],
     
     sender: values.sender,
     

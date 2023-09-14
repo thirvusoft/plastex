@@ -19,5 +19,6 @@ plastex/config/desktop.py
 plastex/config/docs.py
 plastex/fixtures/custom_field.json
 plastex/plastex/__init__.py
+plastex/plastex/purchase_order.js
 plastex/templates/__init__.py
 plastex/templates/pages/__init__.py
