@@ -393,19 +393,6 @@ frappe.ui.form.on("Purchase Order", "refresh", function(frm, cdt, cdn) {
     primary_action(values) {
     
     d.hide();
-    
-    var attachments = [
-        
-    ];
-    if (values.select_attachments) {
-        (async () => {
-            attachments.push((await frappe.db.get_list("File", {
-            filters: {"file_url": "/private/files/Sri Vigneshwara Enterprises.pdf"},
-            fields: ['name']
-           }))[0].name) 
-        }).call() 
-      
-    }
     if (values.attach_document_print ==1){
     
     var print_settings = get_print_settings();
@@ -463,7 +450,7 @@ frappe.ui.form.on("Purchase Order", "refresh", function(frm, cdt, cdn) {
     
     sender_full_name: "",
     
-    attachments: attachments,
+    attachments: "",
     
     _lang : values.select_language,
     
