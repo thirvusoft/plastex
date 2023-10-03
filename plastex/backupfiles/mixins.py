@@ -1,6 +1,8 @@
 import frappe
 from frappe import _
+#Thirvusoft Edit Start
 import json
+#Thirvusoft Edit End
 from frappe.core.utils import get_parent_doc
 from frappe.desk.doctype.todo.todo import ToDo
 from frappe.email.doctype.email_account.email_account import EmailAccount
@@ -140,7 +142,9 @@ class CommunicationEmailMixin:
 
 	def get_attach_link(self, print_format):
 		"""Returns public link for the attachment via `templates/emails/print_link.html`."""
+		#Thirvusoft Edit Start
 		return '' if not isinstance(print_format, str) else frappe.get_template("templates/emails/print_link.html").render(
+		#Thirvusoft Edit End
 			{
 				"url": get_url(),
 				"doctype": self.reference_doctype,
@@ -262,7 +266,7 @@ class CommunicationEmailMixin:
 
 		if not (recipients or cc):
 			return {}
-
+		#Thirvusoft edit start
 		try:
 			load_attachments = json.loads(print_format)
 			print_format = load_attachments
@@ -279,6 +283,7 @@ class CommunicationEmailMixin:
 				if att:
 					final_attachments.append(att[0])
 		else:
+			#Thirvusoft edit end
 			final_attachments = self.mail_attachments(print_format=print_format, print_html=print_html)
 		incoming_email_account = self.get_incoming_email_account()
 		return {
