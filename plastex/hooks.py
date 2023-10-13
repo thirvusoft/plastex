@@ -119,3 +119,6 @@ scheduler_events = {
 # 	"frappe.desk.doctype.event.event.get_events": "plastex.event.get_events"
 # }
 
+override_doctype_class = {
+	"Communication": "plastex.plastex.mixins._Communication"
+}
